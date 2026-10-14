@@ -115,24 +115,3 @@ The web app will launch automatically at `http://localhost:3000`.
 | `exam_submissions` | `id` | Student test sessions, server-recorded start/submit timestamps, score, and violation count. |
 | `student_answers` | `id` | Audit record of individual question choices, correctness boolean, and marks awarded. |
 | `proctoring_logs` | `id` | Time-stamped incident telemetry (`TAB_SWITCH`, `FULLSCREEN_EXIT`, `NO_FACE`). |
-
----
-
-## 5. B.Tech 1st Year Viva Voce Defense Guide
-
-Here are the top technical questions professors ask during project evaluations, along with clear explanations:
-
-#### Q1: What is WebRTC and why is it used instead of regular HTTP streaming?
-> **Answer:** WebRTC (Web Real-Time Communication) enables direct peer-to-peer audio, video, and data communication between browsers without sending video through an intermediate web server. This provides sub-second latency and drastically cuts server bandwidth costs during large-scale college examinations.
-
-#### Q2: What is the role of the STUN server in your project?
-> **Answer:** Computers on campus networks or home Wi-Fi are behind NAT (Network Address Translation) and private firewalls. A STUN (Session Traversal Utilities for NAT) server lets the student's browser discover its public IP address and port so the proctor's browser can establish a direct peer-to-peer connection.
-
-#### Q3: How do you prevent students from seeing the correct answers using browser Inspect Element?
-> **Answer:** The frontend API request (`GET /api/exams/:id`) sanitizes the questions and strips out the `correct_option` field entirely before returning data to the student. The evaluation logic runs exclusively on the Node.js server (`POST /api/exams/:id/submit`), keeping answer keys completely hidden from client memory.
-
-#### Q4: How does the system detect if a student switches tabs or minimizes the window?
-> **Answer:** The frontend hooks into the Page Visibility API (`document.addEventListener('visibilitychange')`). When the student leaves the exam tab, `document.hidden` becomes `true`. Additionally, `window.addEventListener('blur')` triggers when the window loses focus, immediately dispatching a violation log to the backend and alerting the proctor in real-time.
-
-#### Q5: How is time calculated securely against system clock tampering?
-> **Answer:** Rather than trusting the student's local computer clock, the backend creates an immutable `start_time` timestamp in the database when the exam begins. Upon submission, the backend checks elapsed time against the exam duration to verify compliance.
