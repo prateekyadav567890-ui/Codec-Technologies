@@ -104,19 +104,3 @@ npm start
 3. Click **Add New Project** $\rightarrow$ **Import** your repository.
 4. Set **Root Directory** to `frontend`.
 5. Click **Deploy**. The application includes pre-configured mock fallbacks in `api.js` so all tabs, deals, lead management, and dashboards work 100% interactively on your live Vercel link!
-
----
-
-## 5. B.Tech 1st Year Viva Voce Defense Guide
-
-#### Q1: Why did you choose MongoDB (NoSQL) over a traditional relational database (SQL) for a CRM?
-> **Answer:** Customer relationship data is inherently dynamic. Different leads and enterprise deals require flexible schemas (varying custom fields, contact attributes, and unstructured activity logs). MongoDB's BSON document model allows flexible schema evolution without complex SQL multi-table joins or schema migrations.
-
-#### Q2: How is Role-Based Access Control (RBAC) implemented securely?
-> **Answer:** We use an Express authorization middleware (`verifyRole(['admin', 'manager'])`). The backend validates incoming identity roles before granting access to sensitive endpoints. For example, if a Sales Rep attempts to delete a customer lead or mark a deal as "Closed Won", the backend returns an HTTP `403 Forbidden` status code, ensuring security cannot be bypassed on the client.
-
-#### Q3: How does the pipeline deal stage advancement work?
-> **Answer:** Each deal document contains a `stage` and corresponding `probability` factor (e.g., Prospect: 25%, Negotiation: 80%, Closed Won: 100%). When a deal is shifted to a new stage, the backend updates the deal document, recalculates pipeline health metrics, and writes an automatic record into the `activities` collection.
-
-#### Q4: How is sales performance calculated?
-> **Answer:** The analytics endpoint computes aggregate metrics across the deal dataset: summing active deal values for total pipeline, filtering `Closed Won` deals for recognized revenue, and calculating the win rate percentage by comparing won deals against total resolved negotiations.
