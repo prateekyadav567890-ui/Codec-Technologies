@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Financial EMI Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #eef3fb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .box {
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      width: 320px;
+    }
+    h2 { text-align: center; color: #0b1230; }
+    label { display: block; margin-top: 15px; color: #475569; }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      font-size: 16px;
+      border: 2px solid #cbd5e1;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+    input:focus, select:focus { outline: none; border-color: #0891b2; }
+    .result {
+      margin-top: 20px;
+      background: #0b1230;
+      color: #fff;
+      padding: 15px;
+      border-radius: 8px;
+    }
+    .result p { margin: 8px 0; display: flex; justify-content: space-between; }
+    .emi { color: #22d3ee; font-size: 20px; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2>EMI Calculator</h2>
+
+    <label for="amount">Loan Amount (₹)</label>
+    <input type="number" id="amount" placeholder="e.g. 1000000">
+
+    <label for="rate">Interest Rate (% per year)</label>
+    <input type="number" id="rate" placeholder="e.g. 10" step="0.1">
+
+    <label for="tenure">Tenure</label>
+    <input type="number" id="tenure" placeholder="e.g. 5">
+    <select id="unit">
+      <option value="years">Years</option>
+      <option value="months">Months</option>
+    </select>
+
+    <div class="result">
+      <p>Monthly EMI <span class="emi" id="emi">₹0</span></p>
+      <p>Total Interest <span id="interest">₹0</span></p>
+      <p>Total Payable <span id="total">₹0</span></p>
+    </div>
+  </div>
+
+  <script>
+    const amount = document.getElementById("amount");
+    const rate = document.getElementById("rate");
+    const tenure = document.getElementById("tenure");
+    const unit = document.getElementById("unit");
+
+    // Format a number as Indian Rupees
+    function money(value) {
+      return value.toLocaleString("en-IN", {
+        style: "currency",
+        currency: "INR",
+        maximumFractionDigits: 0
+      });
+    }
+
+    function calculate() {
+      const P = parseFloat(amount.value);
+      const annualRate = parseFloat(rate.value);
+      let n = parseFloat(tenure.value);
+
+      // Do nothing until all inputs are valid
+      if (!(P > 0) || !(annualRate >= 0) || !(n > 0)) {
+        document.getElementById("emi").textContent = "₹0";
+        document.getElementById("interest").textContent = "₹0";
+        document.getElementById("total").textContent = "₹0";
+        return;
+      }
+
+      if (unit.value === "years") n = n * 12;   // convert to months
+
+      const r = annualRate / 12 / 100;          // monthly rate
+      let emi;
+
+      if (r === 0) {
+        emi = P / n;                            // no interest case
+      } else {
+        const factor = Math.pow(1 + r, n);
+        emi = (P * r * factor) / (factor - 1);
+      }
+
+      const total = emi * n;
+      const interest = total - P;
+
+      document.getElementById("emi").textContent = money(emi);
+      document.getElementById("interest").textContent = money(interest);
+      document.getElementById("total").textContent = money(total);
+    }
+
+    // Recalculate whenever the user types or changes the unit
+    amount.addEventListener("input", calculate);
+    rate.addEventListener("input", calculate);
+    tenure.addEventListener("input", calculate);
+    unit.addEventListener("change", calculate);
+  </script>
+</body>
+</html>
